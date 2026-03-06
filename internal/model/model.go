@@ -29,9 +29,6 @@ type Showtime struct {
 	MovieID uint      `gorm:"not null;index"`
 	HallID  uint      `gorm:"not null;index"`
 	StartAt time.Time `gorm:"not null"`
-
-	Movie Movie `gorm:"foreignKey:MovieID"`
-	Hall  Hall  `gorm:"foreignKey:HallID"`
 }
 
 type Reservation struct {
@@ -39,10 +36,6 @@ type Reservation struct {
 	ShowtimeID uint `gorm:"not null;index;uniqueIndex:idx_unique_ticket"`
 	SeatID     uint `gorm:"not null;index;uniqueIndex:idx_unique_ticket"`
 	UserID     uint `gorm:"not null;index"`
-
-	Showtime Showtime `gorm:"foreignKey:ShowtimeID"`
-	Seat     Seat     `gorm:"foreignKey:SeatID"`
-	User     User     `gorm:"foreignKey:UserID"`
 }
 
 type Hall struct {
@@ -58,8 +51,6 @@ type Seat struct {
 	HallID uint `gorm:"not null;index;uniqueIndex:idx_hall_row_col" json:"hall_id"`
 	Row    int  `gorm:"not null;uniqueIndex:idx_hall_row_col;check:row>0" json:"row"`
 	Col    int  `gorm:"not null;uniqueIndex:idx_hall_row_col;check:col>0" json:"col"`
-
-	Hall Hall `gorm:"foreignKey:HallID;constraint:OnDelete:CASCADE" json:"-"`
 }
 
 type ShowtimeSeatStatus string
@@ -75,7 +66,4 @@ type ShowtimeSeat struct {
 	ShowtimeID uint               `gorm:"not null;index;uniqueIndex:idx_showtime_seat"`
 	SeatID     uint               `gorm:"not null;index;uniqueIndex:idx_showtime_seat"`
 	Status     ShowtimeSeatStatus `gorm:"type:varchar(16);not null"`
-
-	Showtime Showtime `gorm:"foreignKey:ShowtimeID;constraint:OnDelete:CASCADE"`
-	Seat     Seat     `gorm:"foreignKey:SeatID;constraint:OnDelete:CASCADE"`
 }

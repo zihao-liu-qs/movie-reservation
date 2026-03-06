@@ -161,7 +161,22 @@ func (h *ShowtimeHandler) GetShowtimeAvailability(ctx *gin.Context) {
 		dto.BadRequest(ctx, "Invalid showtime id")
 		return
 	}
-	remainingTickets, err := h.App.ReservationService.GetRemainingTickets(uint(id))
+
+	// First get the showtime
+	showtime, err := h.App.ShowtimeService.GetShowtimeByID(uint(id))
+	if err != nil {
+		if errors.Is(err, service.ErrNotFound) {
+			ctx.Error(err)
+			dto.NotFound(ctx, "Showtime not exists")
+			return
+		}
+		ctx.Error(err)
+		dto.InternalServerError(ctx, "Failed to get showtime")
+		return
+	}
+
+	// Then get remaining tickets
+	remainingTickets, err := h.App.ReservationService.GetRemainingTicketsTx(h.App.DB, showtime)
 	if err != nil {
 		if errors.Is(err, service.ErrNotFound) {
 			ctx.Error(err)
